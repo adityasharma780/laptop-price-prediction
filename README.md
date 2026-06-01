@@ -1,4 +1,9 @@
 # 💻 Laptop Price Prediction using Machine Learning
+## Live Demo
+
+🚀 Try the application here:
+
+https://laptop-price-prediction-zhcs33w8esgs96j6zbcrhq.streamlit.app/
 
 ## 📌 Project Overview
 
