@@ -3,202 +3,125 @@ import pickle
 import pandas as pd
 import numpy as np
 
-# Load model and dataset
+# =========================
+# Load Model and Dataset
+# =========================
+
 model = pickle.load(open("pipe.pkl", "rb"))
 df = pd.read_csv("cleaned_laptop.csv")
 
-st.set_page_config(page_title="Laptop Price Predictor")
+# =========================
+# Page Configuration
+# =========================
 
-st.title("💻 Laptop Price Predictor")
+st.set_page_config(
+    page_title="Laptop Price Predictor",
+    page_icon="💻",
+    layout="centered"
+)
 
 # =========================
-# Basic Information
+# Title
+# =========================
+
+st.title("💻 Laptop Price Predictor")
+st.write("Enter laptop specifications to estimate its price.")
+
+st.markdown("---")
+
+# =========================
+# Input Fields
 # =========================
 
 company = st.selectbox(
-    "Company",
+    "🏢 Company",
     sorted(df["Company"].unique())
 )
 
-product = st.selectbox(
-    "Product",
-    sorted(df["Product"].unique())
-)
-
 type_name = st.selectbox(
-    "Type",
+    "📂 Laptop Type",
     sorted(df["TypeName"].unique())
 )
 
-inches = st.number_input(
-    "Screen Size (Inches)",
-    min_value=10.0,
-    max_value=20.0,
-    step=0.1
+ram = st.selectbox(
+    "🧠 RAM (GB)",
+    sorted(df["Ram"].unique())
 )
 
-ram = st.number_input(
-    "RAM (GB)",
-    min_value=2,
-    max_value=64,
-    step=2
+primary_storage = st.selectbox(
+    "💾 Storage (GB)",
+    sorted(df["PrimaryStorage"].unique())
 )
-
-# =========================
-# Operating System
-# =========================
-
-os = st.selectbox(
-    "Operating System",
-    sorted(df["OS"].unique())
-)
-
-weight = st.number_input(
-    "Weight (kg)",
-    min_value=0.5,
-    max_value=5.0,
-    step=0.1
-)
-
-# =========================
-# Display Information
-# =========================
-
-screen = st.selectbox(
-    "Screen Type",
-    sorted(df["Screen"].unique())
-)
-
-screen_w = st.number_input(
-    "Screen Width",
-    min_value=800,
-    max_value=5000,
-    step=1
-)
-
-screen_h = st.number_input(
-    "Screen Height",
-    min_value=600,
-    max_value=3000,
-    step=1
-)
-
-touchscreen = st.selectbox(
-    "Touchscreen",
-    ["Yes", "No"]
-)
-
-ips_panel = st.selectbox(
-    "IPS Panel",
-    ["Yes", "No"]
-)
-
-retina_display = st.selectbox(
-    "Retina Display",
-    ["Yes", "No"]
-)
-
-# =========================
-# CPU Information
-# =========================
 
 cpu_company = st.selectbox(
-    "CPU Company",
+    "⚙️ Processor Brand",
     sorted(df["CPU_company"].unique())
 )
 
 cpu_freq = st.number_input(
-    "CPU Frequency (GHz)",
+    "🚀 CPU Frequency (GHz)",
     min_value=1.0,
     max_value=5.0,
+    value=2.5,
     step=0.1
 )
 
-cpu_model = st.selectbox(
-    "CPU Model",
-    sorted(df["CPU_model"].unique())
+inches = st.slider(
+    "🖥️ Screen Size (Inches)",
+    min_value=10.0,
+    max_value=18.0,
+    value=15.6,
+    step=0.1
 )
 
-# =========================
-# Storage Information
-# =========================
-
-primary_storage = st.number_input(
-    "Primary Storage (GB)",
-    min_value=0,
-    max_value=5000,
-    step=32
+os = st.selectbox(
+    "💿 Operating System",
+    sorted(df["OS"].unique())
 )
 
-secondary_storage = st.number_input(
-    "Secondary Storage (GB)",
-    min_value=0,
-    max_value=5000,
-    step=32
-)
-
-primary_storage_type = st.selectbox(
-    "Primary Storage Type",
-    sorted(df["PrimaryStorageType"].unique())
-)
-
-secondary_storage_type = st.selectbox(
-    "Secondary Storage Type",
-    sorted(df["SecondaryStorageType"].unique())
-)
-
-# =========================
-# GPU Information
-# =========================
-
-gpu_company = st.selectbox(
-    "GPU Company",
-    sorted(df["GPU_company"].unique())
-)
-
-gpu_model = st.selectbox(
-    "GPU Model",
-    sorted(df["GPU_model"].unique())
-)
+st.markdown("---")
 
 # =========================
 # Prediction
 # =========================
 
-if st.button("Predict Price"):
+if st.button("🔍 Predict Price"):
 
     sample = pd.DataFrame({
-        'Company': [company],
-        'Product': [product],
-        'TypeName': [type_name],
-        'Inches': [inches],
-        'Ram': [ram],
-        'OS': [os],
-        'Weight': [weight],
-        'Screen': [screen],
-        'ScreenW': [screen_w],
-        'ScreenH': [screen_h],
-        'Touchscreen': [touchscreen],
-        'IPSpanel': [ips_panel],
-        'RetinaDisplay': [retina_display],
-        'CPU_company': [cpu_company],
-        'CPU_freq': [cpu_freq],
-        'CPU_model': [cpu_model],
-        'PrimaryStorage': [primary_storage],
-        'SecondaryStorage': [secondary_storage],
-        'PrimaryStorageType': [primary_storage_type],
-        'SecondaryStorageType': [secondary_storage_type],
-        'GPU_company': [gpu_company],
-        'GPU_model': [gpu_model]
+        "Company": [company],
+        "TypeName": [type_name],
+        "Ram": [ram],
+        "PrimaryStorage": [primary_storage],
+        "CPU_company": [cpu_company],
+        "CPU_freq": [cpu_freq],
+        "Inches": [inches],
+        "OS": [os]
     })
 
     try:
+        # Predict log(price)
         prediction_log = model.predict(sample)
+
+        # Convert back to actual price
         prediction_price = np.exp(prediction_log)
 
+        # Convert Euro to INR
+        price_inr = prediction_price[0] * 95
+
         st.success(
-            f"Predicted Laptop Price: Rs{prediction_price[0] * 95:.2f}"
+            f"💰 Estimated Laptop Price: ₹{price_inr:,.0f}"
+        )
+
+        st.info(
+            f"Approximate Price in Euros: €{prediction_price[0]:,.2f}"
         )
 
     except Exception as e:
         st.error(f"Prediction Error: {e}")
+
+# =========================
+# Footer
+# =========================
+
+st.markdown("---")
+st.caption("Built with Python, Scikit-Learn and Streamlit")

@@ -1,13 +1,18 @@
 # 💻 Laptop Price Prediction using Machine Learning
+
 ## Live Demo
 
 🚀 Try the application here:
 
 https://laptop-price-prediction-zhcs33w8esgs96j6zbcrhq.streamlit.app/
 
-## 📌 Project Overview
+---
 
-This project predicts the price of a laptop based on its specifications such as company, RAM, processor, storage, display characteristics, operating system, and GPU information.
+# 📌 Project Overview
+
+This project predicts the price of a laptop based on a small set of important specifications using Machine Learning.
+
+Instead of requiring users to enter more than 20 technical specifications, the application uses only a few key features that have the greatest impact on laptop pricing. This makes the prediction process faster, simpler, and more user-friendly.
 
 The project follows a complete Machine Learning workflow:
 
@@ -19,7 +24,7 @@ The project follows a complete Machine Learning workflow:
 * Model Evaluation
 * Model Deployment using Streamlit
 
-The final application allows users to enter laptop specifications through a web interface and receive an estimated laptop price.
+The final application allows users to enter laptop specifications through a web interface and receive an estimated laptop price instantly.
 
 ---
 
@@ -27,32 +32,18 @@ The final application allows users to enter laptop specifications through a web 
 
 The dataset contains laptop specifications and their corresponding prices.
 
-### Features Used
+### Features Used for Prediction
 
-| Feature              | Description                 |
-| -------------------- | --------------------------- |
-| Company              | Laptop manufacturer         |
-| Product              | Laptop model name           |
-| TypeName             | Laptop category             |
-| Inches               | Screen size                 |
-| Ram                  | RAM size (GB)               |
-| OS                   | Operating System            |
-| Weight               | Weight in kg                |
-| Screen               | Screen quality/type         |
-| ScreenW              | Screen width resolution     |
-| ScreenH              | Screen height resolution    |
-| Touchscreen          | Touchscreen availability    |
-| IPSpanel             | IPS display availability    |
-| RetinaDisplay        | Retina display availability |
-| CPU_company          | Processor manufacturer      |
-| CPU_freq             | Processor frequency         |
-| CPU_model            | Processor model             |
-| PrimaryStorage       | Primary storage capacity    |
-| SecondaryStorage     | Secondary storage capacity  |
-| PrimaryStorageType   | SSD/HDD/Hybrid etc.         |
-| SecondaryStorageType | SSD/HDD/Hybrid etc.         |
-| GPU_company          | Graphics card manufacturer  |
-| GPU_model            | Graphics card model         |
+| Feature        | Description                 |
+| -------------- | --------------------------- |
+| Company        | Laptop manufacturer         |
+| TypeName       | Laptop category             |
+| Ram            | RAM size (GB)               |
+| PrimaryStorage | Storage capacity (GB)       |
+| CPU_company    | Processor manufacturer      |
+| CPU_freq       | Processor frequency (GHz)   |
+| Inches         | Screen size                 |
+| OS             | Operating System            |
 
 ### Target Variable
 
@@ -60,7 +51,7 @@ The dataset contains laptop specifications and their corresponding prices.
 Price_euros
 ```
 
-The target variable was transformed using logarithmic transformation to reduce skewness and improve model performance.
+To improve model performance and reduce skewness, the target variable was transformed using a logarithmic transformation before training.
 
 ---
 
@@ -72,6 +63,7 @@ The target variable was transformed using logarithmic transformation to reduce s
 * Scikit-Learn
 * Streamlit
 * Pickle
+* Git & GitHub
 
 ---
 
@@ -79,7 +71,7 @@ The target variable was transformed using logarithmic transformation to reduce s
 
 ## 1. Data Cleaning
 
-Performed cleaning and preprocessing on the raw dataset.
+Performed preprocessing and cleaning on the raw dataset.
 
 Tasks included:
 
@@ -92,11 +84,22 @@ Tasks included:
 
 ## 2. Feature Engineering
 
-Several useful features were extracted and transformed:
+Several useful features were extracted from the original dataset, including:
 
-### Screen Features
+### CPU Features
 
-Created:
+* CPU_company
+* CPU_model
+* CPU_freq
+
+### Storage Features
+
+* PrimaryStorage
+* SecondaryStorage
+* PrimaryStorageType
+* SecondaryStorageType
+
+### Display Features
 
 * Screen
 * ScreenW
@@ -105,41 +108,24 @@ Created:
 * IPSpanel
 * RetinaDisplay
 
-### CPU Features
-
-Extracted:
-
-* CPU_company
-* CPU_model
-* CPU_freq
-
-### Storage Features
-
-Created:
-
-* PrimaryStorage
-* SecondaryStorage
-* PrimaryStorageType
-* SecondaryStorageType
-
 ### GPU Features
-
-Extracted:
 
 * GPU_company
 * GPU_model
+
+Although many engineered features were created, only the most impactful features were selected for the final deployed model to improve usability.
 
 ---
 
 ## 3. Data Preprocessing
 
-Categorical variables were encoded using:
+Categorical features were encoded using:
 
 ```python
 OneHotEncoder(handle_unknown="ignore")
 ```
 
-A ColumnTransformer was used to apply encoding only on categorical columns.
+A ColumnTransformer was used to apply transformations efficiently:
 
 ```python
 preprocessor = ColumnTransformer(
@@ -172,7 +158,7 @@ train_test_split(
 )
 ```
 
-Using a fixed random_state ensures reproducible results.
+Using a fixed random state ensures reproducible results.
 
 ---
 
@@ -184,7 +170,7 @@ The model used in this project is:
 LinearRegression()
 ```
 
-A Pipeline was created to combine preprocessing and model training.
+A Pipeline was created to combine preprocessing and model training:
 
 ```python
 pipeline = Pipeline([
@@ -197,7 +183,7 @@ Benefits of Pipeline:
 
 * Prevents data leakage
 * Simplifies prediction workflow
-* Automatically applies transformations before prediction
+* Automatically applies preprocessing before prediction
 
 ---
 
@@ -219,56 +205,48 @@ Predictions were converted back using:
 np.exp(prediction)
 ```
 
-This significantly improved model performance.
+This improved model stability and prediction accuracy.
 
 ---
 
 # 📈 Model Evaluation
 
-Evaluation Metrics:
-
 ### R² Score
 
-Measures how well the model explains variation in laptop prices.
-
-Result:
-
 ```text
-0.878
+0.779
 ```
 
 Meaning:
 
-Approximately 87.8% of the variation in laptop prices is explained by the model.
+Approximately 77.9% of the variation in laptop prices is explained by the model.
 
 ### Mean Absolute Error (MAE)
 
-Calculated after converting predictions back to actual prices.
-
-Result:
-
 ```text
-≈ 194 Euros
+≈ 274 Euros
 ```
 
 Meaning:
 
-On average, the model's prediction differs from the actual laptop price by approximately €194.
+On average, the model's prediction differs from the actual laptop price by approximately €274.
+
+The reduced-feature model was chosen to provide a better user experience while maintaining good predictive performance.
 
 ---
 
 # 🌐 Streamlit Deployment
 
-A Streamlit web application was developed for deployment.
+The project is deployed using Streamlit Cloud.
 
 Features:
 
-* User-friendly interface
-* Dynamic dropdowns
+* Clean and user-friendly interface
+* Minimal input requirements
 * Real-time price prediction
-* INR price display
+* Instant prediction results
 
-Users can select laptop specifications and receive an estimated price instantly.
+Users can estimate laptop prices using only six key specifications.
 
 ---
 
@@ -283,7 +261,7 @@ laptop-price-prediction/
 ├── requirements.txt
 ├── README.md
 ├── main.ipynb
-│__predict.py
+├── predict.py
 └── .gitignore
 ```
 
@@ -324,10 +302,10 @@ Possible enhancements:
 * Random Forest Regression
 * XGBoost Regression
 * Hyperparameter Tuning
-* Better UI Design
-* Live Currency Conversion
-* Cloud Deployment
 * Model Comparison Dashboard
+* Advanced Feature Selection
+* Improved UI/UX
+* Cloud Deployment Enhancements
 
 ---
 
@@ -350,8 +328,9 @@ Through this project, I learned:
 
 # 👨‍💻 Author
 
-Aditya Sharma
+**Aditya Sharma**
 
-Machine Learning Beginner Project
+Machine Learning Project
 
 Built using Python, Scikit-Learn, and Streamlit.
+
